@@ -179,7 +179,7 @@ docker network connect datalens_default clickhouse-course
 
 
 ## 6. Создаем чарты и дашборд
-![2025-06-11_16-24](https://github.com/user-attachments/assets/bf8d73fd-e32f-4e5f-81a2-5377a97667fb)
+![2025-06-11_17-40](https://github.com/user-attachments/assets/3d47d638-9d90-4310-8e45-ff0dfa31a31c)
 
 
 ## 7. Определяем запросы, которые выполнялись во время открытия дашборда
