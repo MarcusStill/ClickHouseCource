@@ -42,7 +42,7 @@ VALUES
 (1, 'created', 80, 1, 1, 3);
 ```
 
-### 3. Вставляем данные
+### 5. Вставляем данные
 ```
 INSERT INTO learn_db.orders
 (order_id, status, amount, pcs, sign, version)
@@ -50,7 +50,7 @@ VALUES
 (1, 'created', 80, 1, -1, 3);
 ```
 
-### 3. Вставляем данные
+### 6. Вставляем данные
 ```
 INSERT INTO learn_db.orders
 (order_id, status, amount, pcs, sign, version)
@@ -58,7 +58,7 @@ VALUES
 (1, 'created', 70, 1, 1, 4);
 ```
 
-### 3. Вставляем данные
+### 7. Вставляем данные
 ```
 INSERT INTO learn_db.orders
 (order_id, status, amount, pcs, sign, version)
@@ -67,7 +67,7 @@ VALUES
 (1, 'packed', 70, 1, 1, 5);
 ```
 
-### 3. Вставляем данные
+### 8. Вставляем данные
 ```
 INSERT INTO learn_db.orders
 (order_id, status, amount, pcs, sign, version)
@@ -76,17 +76,17 @@ VALUES
 (1, 'packed', 60, 1, 1, 6);
 ```
 
-### 3. Запускаем принудительное слияние всех частей таблицы
+### 9. Запускаем принудительное слияние всех частей таблицы
 ```sql
 OPTIMIZE TABLE orders FINAL;
 ```
 
-### 4. Смотрим содержимое таблицы
+### 10. Смотрим содержимое таблицы
 ```sql
 SELECT *, _part FROM orders;
 ```
 
-### 5. Получаем актуальную строку заказа
+### 11. Получаем актуальную строку заказа
 ```sql
 SELECT 
 	order_id,
