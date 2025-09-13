@@ -57,7 +57,7 @@ order_id|status |amount|pcs|
        1|created| 80.00|  1|
 ```
 
-### 2. Добавим еще одну строку
+### 4. Добавим еще одну строку
 ```sql
 INSERT INTO learn_db.orders
 (order_id, status, amount, pcs)
@@ -66,7 +66,7 @@ VALUES
 ```
 В этом случае FINAL выведет последнее добавленное значение.
 
-### 4. Пересоздаем таблицу orders, добавив колонку с номером версии строки
+### 5. Пересоздаем таблицу orders, добавив колонку с номером версии строки
 ```
 DROP TABLE IF EXISTS orders;
 CREATE TABLE orders (
@@ -80,7 +80,7 @@ ENGINE = ReplacingMergeTree(version)
 ORDER BY (order_id);
 ```
 
-### 5. Вставляем 3 строки в таблицу, соответствующие одному заказу
+### 6. Вставляем 3 строки в таблицу, соответствующие одному заказу
 ```
 INSERT INTO learn_db.orders
 (order_id, status, amount, pcs, version)
@@ -98,7 +98,7 @@ VALUES
 (1, 'created', 80, 1, 4);
 ```
 
-### 6. Получаем все строки из таблицы заказов и только актуальную строку
+### 7. Получаем все строки из таблицы заказов и только актуальную строку
 ```
 SELECT * FROM orders o FINAL;
 ```
@@ -110,7 +110,7 @@ order_id|status |amount|pcs|version|
        1|created| 80.00|  1|      4|
 ```
 
-### 7. Добавим еще одну строку
+### 8. Добавим еще одну строку
 ```sql
 INSERT INTO learn_db.orders -- -
 (order_id, status, amount, pcs, version)
@@ -118,14 +118,14 @@ VALUES
 (1, 'created', 70, 1, 2);
 ```
 
-### 8. Получаем все строки из таблицы заказов и только актуальную строку
+### 9. Получаем все строки из таблицы заказов и только актуальную строку
 ```
 SELECT * FROM orders o FINAL;
 ```
 Получим строку с amount = 80. Если при слиянии частей в частях находятся дубли, то тогда среди них CH оставит ту строчку, 
 у которой version максимальный (или если одна версия, то строку, добавленную последней).
 
-### 9. Пересоздаем таблицу orders, добавив колонку с пометкой, что строка удалена
+### 10. Пересоздаем таблицу orders, добавив колонку с пометкой, что строка удалена
 ```
 DROP TABLE IF EXISTS orders;
 CREATE TABLE orders (
@@ -140,7 +140,7 @@ ENGINE = ReplacingMergeTree(version, is_deleted)
 ORDER BY (status, order_id);
 ```
 
-### 10. Вставляем 4 строки, меняющие состояние заказа с номером 1
+### 11. Вставляем 4 строки, меняющие состояние заказа с номером 1
 ```
 INSERT INTO learn_db.orders
 (order_id, status, amount, pcs, version, is_deleted)
@@ -163,13 +163,13 @@ VALUES
 (1, 'created', 70, 1, 2, 0);
 ```
 
-### 11. Получаем все строки из таблицы заказов и только актуальную строку
+### 12. Получаем все строки из таблицы заказов и только актуальную строку
 ```sql
 SELECT * FROM orders o;
 SELECT * FROM orders o FINAL;
 ```
 
-### 12. Проверим на сколько запрос замедляется при использовании FINAL. Создаем и наполняем таблицу с движком MergeTree
+### 13. Проверим на сколько запрос замедляется при использовании FINAL. Создаем и наполняем таблицу с движком MergeTree
 ```sql
 DROP TABLE learn_db.mart_student_lesson;
 CREATE TABLE learn_db.mart_student_lesson
@@ -232,7 +232,7 @@ AS SELECT
 FROM numbers(10000000);
 ```
 
-### 13. Создаем и наполняем таблицу с движком ReplacingMergeTree
+### 14. Создаем и наполняем таблицу с движком ReplacingMergeTree
 ```sql
 DROP TABLE IF EXISTS learn_db.mart_student_lesson_replacing_merge_tree;
 CREATE TABLE learn_db.mart_student_lesson_replacing_merge_tree
@@ -281,7 +281,7 @@ FROM
 	learn_db.mart_student_lesson;
 ```
 
-### 14. Считаем количество оценок в таблице с движком MergeTree
+### 15. Считаем количество оценок в таблице с движком MergeTree
 ```sql
 SELECT 
 	mark, 
@@ -290,17 +290,6 @@ FROM learn_db.mart_student_lesson
 GROUP BY
 	mark;
 ```
-
-### 15. Считаем количество оценок в таблице с движком ReplacingMergeTree без применения FINAL
-```sql
-SELECT 
-	mark, 
-	count(*) 
-FROM learn_db.mart_student_lesson_replacing_merge_tree
-GROUP BY
-	mark;
-```
-Запрос выполнился за 0.032 сек.
 
 ### 16. Считаем количество оценок в таблице с движком ReplacingMergeTree без применения FINAL
 ```sql
@@ -311,9 +300,20 @@ FROM learn_db.mart_student_lesson_replacing_merge_tree
 GROUP BY
 	mark;
 ```
+Запрос выполнился за 0.032 сек.
+
+### 17. Считаем количество оценок в таблице с движком ReplacingMergeTree без применения FINAL
+```sql
+SELECT 
+	mark, 
+	count(*) 
+FROM learn_db.mart_student_lesson_replacing_merge_tree
+GROUP BY
+	mark;
+```
 Запрос выполнился за 0.015 сек.
 
-### 17. Считаем количество оценок в таблице с движком ReplacingMergeTree c применением FINAL
+### 18. Считаем количество оценок в таблице с движком ReplacingMergeTree c применением FINAL
 ```sql
 SELECT 
 	mark, 
