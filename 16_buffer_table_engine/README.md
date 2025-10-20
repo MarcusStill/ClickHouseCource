@@ -142,7 +142,7 @@ Showed 1000 out of 3069 rows.
 Peak memory usage: 1.58 MiB.
 ```
 
-### 6. Запускаем 1000 вставок по 1000 строк в один поток в буфферную таблицу
+### 6. Запускаем 1000 вставок по 1000 строк в один поток в буферную таблицу
 
 ```sql
 clickhouse-benchmark --query "
@@ -357,7 +357,7 @@ DROP TABLE IF EXISTS learn_db.mart_student_lesson_buffer;
 CREATE TABLE learn_db.mart_student_lesson_buffer AS learn_db.mart_student_lesson ENGINE = Buffer(learn_db, mart_student_lesson, 10, 10, 100, 10000, 1000000, 10000000, 100000000)
 ```
 
-### 11. Запускаем 1000 вставок по 1000 строк в один поток в буфферную таблицу параллельно в 10 потоков
+### 11. Запускаем 1000 вставок по 1000 строк в один поток в буферную таблицу параллельно в 10 потоков
 ```sql
 clickhouse-benchmark --query "
 INSERT INTO learn_db.mart_student_lesson_buffer
