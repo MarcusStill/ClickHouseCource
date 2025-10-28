@@ -23,7 +23,7 @@ done
 touch docker-compose.yml
 ```
 
-### 3. Наполняем файл файл docker-compose.yml
+### 3. Наполняем файл docker-compose.yml
 
 ```text
 version: '3.8'
@@ -211,6 +211,33 @@ fs/volumes/clickhouse-04/etc/clickhouse-server/config.d/config.xml
 </clickhouse>
 ```
 
+Должно быть так:
+```xml
+<!-- clickhouse-01 (config.xml) -->
+<macros>
+    <shard>01</shard>
+    <replica>01</replica>
+</macros>
+
+<!-- clickhouse-02 (config.xml) -->
+<macros>
+    <shard>02</shard>
+    <replica>01</replica>
+</macros>
+
+<!-- clickhouse-03 (config.xml) -->
+<macros>
+    <shard>01</shard>
+    <replica>02</replica>
+</macros>
+
+<!-- clickhouse-04 (config.xml) -->
+<macros>
+    <shard>02</shard>
+    <replica>02</replica>
+</macros>
+```
+
 ### 6. Наполняем файлы fs/volumes/clickhouse-{}/etc/clickhouse-server/users.d/users.xml
 
 ```text
@@ -378,11 +405,6 @@ CREATE TABLE IF NOT EXISTS learn_db.mart_student_lesson ON CLUSTER cluster_2S_2R
 ) ENGINE = ReplicatedMergeTree('/clickhouse/tables/{database}/{table}/{shard}', '{replica}'); 
 ```
 
-Результат
-```text
-
-```
-
 ### 12. Создаем распределенную таблицу
 
 ```sql
@@ -445,28 +467,28 @@ localhost:8124
 ```text
 count() |
 --------+
-10000000|
+4999398 |
 ```
 
 localhost:8125
 ```text
 count() |
 --------+
-10000000|
+5000602 |
 ```
 
 localhost:8126
 ```text
 count() |
 --------+
-0|
+4999398 |
 ```
 
 localhost:8127
 ```text
 count() |
 --------+
-0|
+5000602|
 ```
 
 ### 15. Запросив данные с любой машины данные из таблицы learn_db.mart_student_lesson_distributed, то получим результат со всех шардов

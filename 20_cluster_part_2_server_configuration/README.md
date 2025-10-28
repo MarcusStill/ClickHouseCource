@@ -8,7 +8,7 @@ cd config.d
 
 ```
 
-Оставим в фале следующее содержимое
+Оставим в файле следующее содержимое
 ```xml
     <query_log>
         <!-- What table to insert data. If table is not exist, it will be created.
