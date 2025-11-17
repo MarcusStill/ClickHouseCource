@@ -5,7 +5,6 @@
 docker run --name clickhouse-course -e CLICKHOUSE_DB=learn_db -e CLICKHOUSE_USER=username -e CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1 -e CLICKHOUSE_PASSWORD=password -p 8123:8123 -p 9000:9000/tcp -d -v clickhouse-logs:/var/log/clickhouse-server -v clickhouse-data:/var/lib/clickhouse clickhouse:25.4
 ```
 
-   
 #### HTTP Interface: 
 * адрес дашборда Clickhouse: http://localhost:8123/dashboard
 * адрес web интерфейса для выполнения запросов: http://localhost:8123/play
@@ -18,7 +17,6 @@ docker run --name clickhouse-course -e CLICKHOUSE_DB=learn_db -e CLICKHOUSE_USER
 * password: password
 
 В свойствах драйвера устанавливаем у параметра socket_timeout значение 300000.
-
 
 ## 2. Создаем витрину данных в Clickhouse
 
@@ -147,8 +145,8 @@ FROM numbers(100000000);
 [Datalens](https://github.com/datalens-tech/datalens)
 
 * Создаем новую папку для Datalens.
-* Переход в созданную паапку.
-* Выполняем команды:
+* Переход в созданный каталог.
+* Запускаем контейнеры
 
 ```console
 git clone https://github.com/datalens-tech/datalens
@@ -197,7 +195,9 @@ LIMIT 20
 ```
 
 #### 7.2 Открываем Docker Desktop и заходим внутрь контейнера Clickhouse
+
 Открываем вкладку "Exec" выполняем команду "bash". Сохраняем все запросы, выполняемые при открытии дашборда, в файл queries.tsv
+
 ```console
 clickhouse-client --query="
 SELECT query FROM system.query_log

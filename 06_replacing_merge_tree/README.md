@@ -1,6 +1,7 @@
 # Применение движка ReplacingMergeTree
 
 ### 1. Удаляем и создаем таблицу orders
+
 ```sql
 DROP TABLE IF EXISTS orders;
 CREATE TABLE orders (
@@ -33,6 +34,7 @@ VALUES
 ```
 
 ### 3. Получаем все строки из таблицы заказов и только актуальную строку
+
 ```sql
 SELECT * FROM orders o;
 ```
@@ -64,9 +66,11 @@ INSERT INTO learn_db.orders
 VALUES
 (1, 'created', 110, 1);
 ```
+
 В этом случае FINAL выведет последнее добавленное значение.
 
 ### 5. Пересоздаем таблицу orders, добавив колонку с номером версии строки
+
 ```
 DROP TABLE IF EXISTS orders;
 CREATE TABLE orders (
@@ -81,6 +85,7 @@ ORDER BY (order_id);
 ```
 
 ### 6. Вставляем 3 строки в таблицу, соответствующие одному заказу
+
 ```
 INSERT INTO learn_db.orders
 (order_id, status, amount, pcs, version)
@@ -99,6 +104,7 @@ VALUES
 ```
 
 ### 7. Получаем все строки из таблицы заказов и только актуальную строку
+
 ```
 SELECT * FROM orders o FINAL;
 ```
@@ -111,6 +117,7 @@ order_id|status |amount|pcs|version|
 ```
 
 ### 8. Добавим еще одну строку
+
 ```sql
 INSERT INTO learn_db.orders -- -
 (order_id, status, amount, pcs, version)
@@ -119,13 +126,16 @@ VALUES
 ```
 
 ### 9. Получаем все строки из таблицы заказов и только актуальную строку
+
 ```
 SELECT * FROM orders o FINAL;
 ```
+
 Получим строку с amount = 80. Если при слиянии частей в частях находятся дубли, то тогда среди них CH оставит ту строчку, 
 у которой version максимальный (или если одна версия, то строку, добавленную последней).
 
 ### 10. Пересоздаем таблицу orders, добавив колонку с пометкой, что строка удалена
+
 ```
 DROP TABLE IF EXISTS orders;
 CREATE TABLE orders (
@@ -141,6 +151,7 @@ ORDER BY (status, order_id);
 ```
 
 ### 11. Вставляем 4 строки, меняющие состояние заказа с номером 1
+
 ```
 INSERT INTO learn_db.orders
 (order_id, status, amount, pcs, version, is_deleted)
@@ -164,12 +175,14 @@ VALUES
 ```
 
 ### 12. Получаем все строки из таблицы заказов и только актуальную строку
+
 ```sql
 SELECT * FROM orders o;
 SELECT * FROM orders o FINAL;
 ```
 
 ### 13. Проверим на сколько запрос замедляется при использовании FINAL. Создаем и наполняем таблицу с движком MergeTree
+
 ```sql
 DROP TABLE learn_db.mart_student_lesson;
 CREATE TABLE learn_db.mart_student_lesson
@@ -233,6 +246,7 @@ FROM numbers(10000000);
 ```
 
 ### 14. Создаем и наполняем таблицу с движком ReplacingMergeTree
+
 ```sql
 DROP TABLE IF EXISTS learn_db.mart_student_lesson_replacing_merge_tree;
 CREATE TABLE learn_db.mart_student_lesson_replacing_merge_tree
@@ -282,6 +296,7 @@ FROM
 ```
 
 ### 15. Считаем количество оценок в таблице с движком MergeTree
+
 ```sql
 SELECT 
 	mark, 
@@ -292,6 +307,7 @@ GROUP BY
 ```
 
 ### 16. Считаем количество оценок в таблице с движком ReplacingMergeTree без применения FINAL
+
 ```sql
 SELECT 
 	mark, 
@@ -300,9 +316,11 @@ FROM learn_db.mart_student_lesson_replacing_merge_tree
 GROUP BY
 	mark;
 ```
+
 Запрос выполнился за 0.032 сек.
 
 ### 17. Считаем количество оценок в таблице с движком ReplacingMergeTree без применения FINAL
+
 ```sql
 SELECT 
 	mark, 
@@ -311,9 +329,11 @@ FROM learn_db.mart_student_lesson_replacing_merge_tree
 GROUP BY
 	mark;
 ```
+
 Запрос выполнился за 0.015 сек.
 
 ### 18. Считаем количество оценок в таблице с движком ReplacingMergeTree c применением FINAL
+
 ```sql
 SELECT 
 	mark, 
@@ -322,4 +342,5 @@ FROM learn_db.mart_student_lesson_replacing_merge_tree FINAL
 GROUP BY
 	mark;
 ```
+
 Запрос выполнился за 0.232 сек. Замедление весьма существенное!

@@ -1,6 +1,7 @@
 # Применение движка CollapsingMergeTree
 
 ### 1. Удаляем и создаем таблицу orders
+
 ```sql
 DROP TABLE IF EXISTS orders;
 
@@ -16,6 +17,7 @@ ORDER BY (order_id);
 ```
 
 ### 2. Вставляем заказ с номером 1
+
 ```sql
 INSERT INTO learn_db.orders
 (order_id, status, amount, pcs, sign)
@@ -24,6 +26,7 @@ VALUES
 ```
 
 ### 3. Правим сумму заказа со 100 до 90
+
 ```sql
 INSERT INTO learn_db.orders
 (order_id, status, amount, pcs, sign)
@@ -33,6 +36,7 @@ VALUES
 ```
 
 ### 4. Правим сумму заказа со 90 до 80
+
 ```sql
 INSERT INTO learn_db.orders
 (order_id, status, amount, pcs, sign)
@@ -42,6 +46,7 @@ VALUES
 ```
 
 ### 5. Получаем актуальную строку заказа
+
 ```sql
 SELECT 
 	order_id,
@@ -56,13 +61,16 @@ GROUP BY
 HAVING 
 	SUM(sign) > 0;
 ```
+
 Результат
 ```text
 order_id|status |amount|pcs|
 --------+-------+------+---+
        1|created| 80.00|  1|
 ```
+
 ### 6. Меняем сумму заказа с 80 до 70 с помощью двух отдельных запросов
+
 ```sql
 INSERT INTO learn_db.orders
 (order_id, status, amount, pcs, sign)
@@ -76,9 +84,11 @@ VALUES
 ```
 
 ### 7. Смотрим строки таблицы orders
+
 ```sql
 SELECT *, _part FROM orders;
 ```
+
 Результат
 ```text
 order_id|status |amount|pcs|sign|_part    |
@@ -93,6 +103,7 @@ order_id|status |amount|pcs|sign|_part    |
 ```
 
 ### 8. Меняем статус заказа
+
 ```sql
 INSERT INTO learn_db.orders
 (order_id, status, amount, pcs, sign)
@@ -102,6 +113,7 @@ VALUES
 ```
 
 ### 9. Удаляем заказа с номером 1
+
 ```sql
 INSERT INTO learn_db.orders
 (order_id, status, amount, pcs, sign)
@@ -110,6 +122,7 @@ VALUES
 ```
 
 ### 10. Удаляем и создаем таблицу orders заново. Тип поля pcs изменен на Int32
+
 ```sql
 DROP TABLE IF EXISTS orders;
 CREATE TABLE orders (
@@ -124,6 +137,7 @@ ORDER BY (order_id);
 ```
 
 ### 11. Добавляем строку заказа и 2 раза меняем сумму заказа
+
 ```sql
 INSERT INTO learn_db.orders
 (order_id, status, amount, pcs, sign)
@@ -144,6 +158,7 @@ VALUES
 ```
 
 ### 12. Получаем актуальную строку заказа
+
 ```sql
 SELECT 
 	order_id,
@@ -158,16 +173,20 @@ GROUP BY
 HAVING 
 	SUM(sign) > 0;
 ```
+
 Результат
 ```text
 order_id|status |amount|pcs|
 --------+-------+------+---+
        1|created| 80.00|  1|
 ```
+
 ### 13. Смотрим на строки таблицы orders
+
 ```sql
 SELECT *, _part  FROM orders;
 ```
+
 Результат
 ```text
 order_id|status |amount |pcs|sign|_part    |
@@ -178,30 +197,38 @@ order_id|status |amount |pcs|sign|_part    |
        1|created| -90.00| -1|  -1|all_3_3_1|
        1|created|  80.00|  1|   1|all_3_3_1|
 ```
+
 ### 14. Получаем актуальные строки таблицы orders с применением FINAL
+
 ```sql
 SELECT * FROM orders FINAL;
 ```
+
 Результат
 ```text
 order_id|status |amount|pcs|sign|
 --------+-------+------+---+----+
        1|created| 80.00|  1|   1|
 ```
+
 ### 15. Считаем количество актуальных строк в таблице orders
+
 ```sql
 SELECT 
 	SUM(sign)
 FROM 
 	orders;
 ```
+
 Результат
 ```text
 SUM(sign)|
 ---------+
         1|
 ```
+
 ### 16. Принудительно оставляем для каждого заказа только одну строку (нежелательная операция)
+
 ```sql
 OPTIMIZE TABLE orders FINAL;
 ```

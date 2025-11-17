@@ -1,6 +1,7 @@
 # Применение движка VersionedCollapsingMergeTree
 
 ### 1. Удаляем и создаем таблицу orders
+
 ```sql
 DROP TABLE IF EXISTS orders;
 CREATE TABLE orders (
@@ -25,6 +26,7 @@ VALUES
 ```
 
 ### 3. Вставляем данные
+
 ```
 INSERT INTO learn_db.orders
 (order_id, status, amount, pcs, sign, version)
@@ -34,6 +36,7 @@ VALUES
 ```
 
 ### 4. Вставляем данные
+
 ```
 INSERT INTO learn_db.orders
 (order_id, status, amount, pcs, sign, version)
@@ -43,6 +46,7 @@ VALUES
 ```
 
 ### 5. Вставляем данные
+
 ```
 INSERT INTO learn_db.orders
 (order_id, status, amount, pcs, sign, version)
@@ -51,6 +55,7 @@ VALUES
 ```
 
 ### 6. Вставляем данные
+
 ```
 INSERT INTO learn_db.orders
 (order_id, status, amount, pcs, sign, version)
@@ -59,6 +64,7 @@ VALUES
 ```
 
 ### 7. Вставляем данные
+
 ```
 INSERT INTO learn_db.orders
 (order_id, status, amount, pcs, sign, version)
@@ -68,6 +74,7 @@ VALUES
 ```
 
 ### 8. Вставляем данные
+
 ```
 INSERT INTO learn_db.orders
 (order_id, status, amount, pcs, sign, version)
@@ -77,16 +84,19 @@ VALUES
 ```
 
 ### 9. Запускаем принудительное слияние всех частей таблицы
+
 ```sql
 OPTIMIZE TABLE orders FINAL;
 ```
 
 ### 10. Смотрим содержимое таблицы
+
 ```sql
 SELECT *, _part FROM orders;
 ```
 
 ### 11. Получаем актуальную строку заказа
+
 ```sql
 SELECT 
 	order_id,
@@ -103,6 +113,7 @@ GROUP BY
 HAVING 
 	SUM(sign) > 0;
 ```
+
 Результат
 ```text
 order_id|status|amount|pcs|sign|version|_part    |
