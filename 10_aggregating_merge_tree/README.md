@@ -1,6 +1,7 @@
 # Применение движка AggregatingMergeTree в Clickhouse
 
 ### 1. Пересоздаем таблицу orders
+
 ```sql
 DROP TABLE IF EXISTS orders;
 CREATE TABLE orders (
@@ -53,6 +54,7 @@ ORDER BY (product_id, order_date);
 ```
        
 ### 5. Наполняем таблицу orders_agg агрегированными данными из таблицы orders
+
 ```sql
 INSERT INTO learn_db.orders_agg
 SELECT
@@ -86,6 +88,7 @@ Query id: a6fa1599-b732-4404-bce0-2cc8896624e9
 ```
 
 ### 7. Вставляем еще одну строку в orders
+
 ```sql
 INSERT INTO learn_db.orders
 (order_id, user_id, product_id, amount, order_date)
@@ -130,6 +133,7 @@ Query id: 5f0f10c5-9f5d-4cfd-a423-f9e419d73ecb
 ```
 
 ### 10. Выполняем принудительный процесс слияния частей в orders_agg и смотрим ее содержимое
+
 ```sql
 OPTIMIZE TABLE learn_db.orders_agg FINAL;
 SELECT *, _part FROM learn_db.orders_agg;
@@ -148,6 +152,7 @@ Query id: 5d29ed7b-10bf-4900-85f2-1708f5b9e4be
 ```
 
 ### 11. Выполняем аналитические запросы к orders_agg
+
 ```
 SELECT 
 	uniqMerge(users)
@@ -242,6 +247,7 @@ FROM
 ```
 
 ### 14. Наполняем orders_agg 366 000 строк
+
 ```sql
 INSERT INTO learn_db.orders_agg
 SELECT
@@ -303,6 +309,7 @@ FROM
 GROUP BY 
 	product_id;
 ```
+
 Результат
 ```text
 Query id: fde00f02-c35e-4583-a403-135e442bd1ed
@@ -328,6 +335,7 @@ Peak memory usage: 28.02 MiB.
 ```
 
 ### 16. Очищаем таблицы orders и orders_agg
+
 ```sql
 TRUNCATE learn_db.orders;
 TRUNCATE learn_db.orders_agg;

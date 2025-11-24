@@ -1,6 +1,7 @@
 # Первичный разряженный индекс в Clickhouse
 
 ### 1. Создаем таблицу без индекса
+
 ```sql
 DROP TABLE learn_db.mart_student_lesson;
 CREATE TABLE learn_db.mart_student_lesson
@@ -78,6 +79,7 @@ GROUP BY
 ORDER BY avg_m desc
 LIMIT 10;
 ```
+
 Результат
 ```text
 
@@ -146,6 +148,7 @@ FROM
 ```
        
 ### 4. Выполняем запрос в clickhouse-client по второй таблице   
+
 ```sql
 SELECT 
 	avg(mark) as avg_m,
@@ -182,6 +185,7 @@ Peak memory usage: 1.66 MiB.
 ```
 
 ### 5. Выполняем запрос на получение названий предметов уроков
+
 ```sql
 SELECT subject_name, count(*) as cnt FROM learn_db.mart_student_lesson GROUP BY subject_name;
 ```
@@ -202,6 +206,7 @@ subject_name        |cnt     |
 ```
 
 ### 6. Получаем строки из 1ой гранулы
+
 ```sql
 SELECT 
 	*
@@ -420,6 +425,7 @@ Peak memory usage: 72.82 MiB.
 ```
 
 ### 7. Получаем список всех частей данных таблицы mart_student_lesson_idx
+
 ```
 SELECT path FROM system.parts where table = 'mart_student_lesson_idx' AND active = 1;
 ```
@@ -441,6 +447,7 @@ path                                                                           |
 ```
 
 ### 9. Смотрим на гранулы в частях данных
+
 ```sql
 SELECT * FROM mergeTreeIndex('learn_db', 'mart_student_lesson_idx');
 ```
@@ -638,7 +645,8 @@ all_10_10_0|         63|           6888| 2025-09-15|
 all_10_10_0|         64|              0| 2025-09-20|
 ```
 
-### 10. Смотрим на засечки в каждой часте данных
+### 10. Смотрим на засечки в каждой части данных
+
 ```
 SELECT
     part_name,
@@ -659,6 +667,7 @@ all_7_7_0  |    129|
 ```
 
 ### 11. Смотрим план выполнения запроса со статистикой по применению индекса
+
 ```
 EXPLAIN indexes = 1
 SELECT 
@@ -696,6 +705,7 @@ Expression (Project names)                                        |
 ```
 
 ### 12. Пересоздаем таблицу с размером гранулы 4096
+
 ```sql
 DROP TABLE IF EXISTS learn_db.mart_student_lesson_idx;
 CREATE TABLE learn_db.mart_student_lesson_idx
@@ -742,6 +752,7 @@ FROM
 ```
 
 ### 13. Пересоздаем таблицу с индексом по трем столбцам
+
 ```sql
 DROP TABLE IF EXISTS learn_db.mart_student_lesson_idx;
 CREATE TABLE learn_db.mart_student_lesson_idx
@@ -825,6 +836,7 @@ Expression (Project names)                                        |
 ```
 
 ### 15. Смотрим, в какое количество частей данный попадает на самом деле person_id_int = 1000
+
 ```sql
 SELECT DISTINCT 
 	_part
@@ -845,6 +857,7 @@ all_8_8_0|
 ```
 
 ### 16. Получаем строки первой гранулы
+
 ```sql
 SELECT 
 	lesson_date, person_id_int, mark
@@ -1063,6 +1076,7 @@ lesson_date|person_id_int|mark|
 ```
 
 ### 17. Получаем количество уникальных значений lesson_date и mark
+
 ```sql
 SELECT count(DISTINCT lesson_date) FROM learn_db.mart_student_lesson_idx;
 SELECT count(DISTINCT mark) FROM learn_db.mart_student_lesson_idx;
@@ -1080,6 +1094,7 @@ countDistinct(mark)|
 ```
 
 ### 18. Пересоздаем таблицу с первым полем в первичном индексе, в котором меньше всего уникальных значений
+
 ```sql
 DROP TABLE IF EXISTS learn_db.mart_student_lesson_idx;
 CREATE TABLE learn_db.mart_student_lesson_idx
@@ -1125,6 +1140,7 @@ FROM
 ```
 
 ### 19. Смотрим план выполнения запроса со статистикой по применению индекса
+
 ```sql
 EXPLAIN indexes = 1
 SELECT 
