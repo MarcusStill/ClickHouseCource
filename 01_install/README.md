@@ -1,6 +1,7 @@
 # Разворачиваем учебный проект
 
 ## 1. Установка однонодного Clickhouse в Docker версии 25.4
+
 ```console
 docker run --name clickhouse-course -e CLICKHOUSE_DB=learn_db -e CLICKHOUSE_USER=username -e CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1 -e CLICKHOUSE_PASSWORD=password -p 8123:8123 -p 9000:9000/tcp -d -v clickhouse-logs:/var/log/clickhouse-server -v clickhouse-data:/var/lib/clickhouse clickhouse:25.4
 ```
@@ -16,7 +17,7 @@ docker run --name clickhouse-course -e CLICKHOUSE_DB=learn_db -e CLICKHOUSE_USER
 * user: username
 * password: password
 
-В свойствах драйвера устанавливаем у параметра socket_timeout значение 300000.
+В свойствах драйвера устанавливаем у параметра socket_timeout значение 300000. За 30 сек. запросы могут не отрабатывать и лучше увеличить этот параметр.
 
 ## 2. Создаем витрину данных в Clickhouse
 
