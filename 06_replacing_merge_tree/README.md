@@ -3,8 +3,8 @@
 ### 1. Удаляем и создаем таблицу orders
 
 ```sql
-DROP TABLE IF EXISTS orders;
-CREATE TABLE orders (
+DROP TABLE IF EXISTS learn_db.orders;
+CREATE TABLE learn_db.orders (
 	order_id UInt32,
 	status String,
 	amount Decimal(18, 2),
@@ -13,6 +13,8 @@ CREATE TABLE orders (
 ENGINE = ReplacingMergeTree()
 ORDER BY (order_id);
 ```
+
+Движок ReplacingMergeTree будет искать строчки с одинаковым order_id, и если он их найдет, то удалит лишние.
 
 ### 2. Вставляем 3 строки в таблицу, соответствующие одному заказу
 
@@ -33,6 +35,8 @@ VALUES
 (1, 'created', 80, 1);
 ```
 
+Как будто мы вставили один заказ и дважды его отредактировали.
+
 ### 3. Получаем все строки из таблицы заказов и только актуальную строку
 
 ```sql
@@ -44,9 +48,13 @@ SELECT * FROM orders o;
 order_id|status |amount|pcs|
 --------+-------+------+---+
        1|created| 80.00|  1|
-       1|created| 90.00|  1|
        1|created|100.00|  1|
+       1|created| 90.00|  1|
 ```
+
+Мы получили дубли.
+
+Выполним запрос с модификатором FINAL.
 
 ```sql
 SELECT * FROM orders o FINAL;
@@ -59,6 +67,8 @@ order_id|status |amount|pcs|
        1|created| 80.00|  1|
 ```
 
+В этом случае FINAL выведет последнее добавленное значение.
+
 ### 4. Добавим еще одну строку
 ```sql
 INSERT INTO learn_db.orders
@@ -67,13 +77,38 @@ VALUES
 (1, 'created', 110, 1);
 ```
 
-В этом случае FINAL выведет последнее добавленное значение.
+Если выполним запрос, то получим актуальное состояние таблицы
+
+```sql
+SELECT * FROM orders o;
+```
+
+Результат
+```text
+order_id|status |amount|pcs|
+--------+-------+------+---+
+       1|created|100.00|  1|
+       1|created|110.00|  1|
+```
+
+Выполним запрос с модификатором FINAL.
+
+```sql
+SELECT * FROM orders o FINAL;
+```
+
+Результат
+```text
+order_id|status |amount|pcs|
+--------+-------+------+---+
+       1|created|110.00|  1|
+```
 
 ### 5. Пересоздаем таблицу orders, добавив колонку с номером версии строки
 
 ```
-DROP TABLE IF EXISTS orders;
-CREATE TABLE orders (
+DROP TABLE IF EXISTS learn_db.orders;
+CREATE TABLE learn_db.orders (
 	order_id UInt32,
 	status String,
 	amount Decimal(18, 2),
@@ -105,8 +140,23 @@ VALUES
 
 ### 7. Получаем все строки из таблицы заказов и только актуальную строку
 
+```sql
+SELECT * FROM learn_db.orders o;
 ```
-SELECT * FROM orders o FINAL;
+
+Результат
+```text
+order_id|status |amount|pcs|version|
+--------+-------+------+---+-------+
+       1|created|100.00|  1|      1|
+       1|created| 80.00|  1|      4|
+       1|created| 90.00|  1|      3|
+```
+
+### 8. Получаем все строки из таблицы заказов и только актуальную строку
+
+```
+SELECT * FROM learn_db.orders o FINAL;
 ```
 
 Результат
@@ -116,29 +166,50 @@ order_id|status |amount|pcs|version|
        1|created| 80.00|  1|      4|
 ```
 
-### 8. Добавим еще одну строку
+### 9. Добавим еще одну строку
 
 ```sql
-INSERT INTO learn_db.orders -- -
+INSERT INTO learn_db.orders
 (order_id, status, amount, pcs, version)
 VALUES
 (1, 'created', 70, 1, 2);
 ```
 
-### 9. Получаем все строки из таблицы заказов и только актуальную строку
+### 10. Получаем все строки из таблицы заказов и только актуальную строку
 
 ```
-SELECT * FROM orders o FINAL;
+SELECT * FROM learn_db.orders o;
+```
+
+Результат
+```text
+order_id|status |amount|pcs|version|
+--------+-------+------+---+-------+
+       1|created| 80.00|  1|      4|
+       1|created| 90.00|  1|      3|
+       1|created|100.00|  1|      1|
+       1|created| 70.00|  1|      2|
+```
+
+```
+SELECT * FROM learn_db.orders o FINAL;
+```
+
+Результат
+```text
+order_id|status |amount|pcs|version|
+--------+-------+------+---+-------+
+       1|created| 80.00|  1|      4|
 ```
 
 Получим строку с amount = 80. Если при слиянии частей в частях находятся дубли, то тогда среди них CH оставит ту строчку, 
 у которой version максимальный (или если одна версия, то строку, добавленную последней).
 
-### 10. Пересоздаем таблицу orders, добавив колонку с пометкой, что строка удалена
+### 11. Пересоздаем таблицу orders, добавив колонку с пометкой, что строка удалена
 
 ```
-DROP TABLE IF EXISTS orders;
-CREATE TABLE orders (
+DROP TABLE IF EXISTS learn_db.orders;
+CREATE TABLE learn_db.orders (
 	order_id UInt32,
 	status String,
 	amount Decimal(18, 2),
@@ -150,7 +221,9 @@ ENGINE = ReplacingMergeTree(version, is_deleted)
 ORDER BY (status, order_id);
 ```
 
-### 11. Вставляем 4 строки, меняющие состояние заказа с номером 1
+Атрибут is_deleted нельзя использовать без version.
+
+### 12. Вставляем 2 строки, меняющие состояние заказа с номером 1
 
 ```
 INSERT INTO learn_db.orders
@@ -162,26 +235,107 @@ INSERT INTO learn_db.orders
 (order_id, status, amount, pcs, version, is_deleted)
 VALUES
 (1, 'created', 90, 1, 3, 0);
+```
 
+### 13. Получаем все строки из таблицы заказов и только актуальную строку
+
+```
+SELECT * FROM learn_db.orders o;
+```
+
+Результат
+```text
+order_id|status |amount|pcs|version|is_deleted|
+--------+-------+------+---+-------+----------+
+       1|created| 90.00|  1|      3|         0|
+       1|created|100.00|  1|      1|         0|
+```
+
+```
+SELECT * FROM learn_db.orders o FINAL;
+```
+
+Результат
+```text
+order_id|status |amount|pcs|version|is_deleted|
+--------+-------+------+---+-------+----------+
+       1|created| 90.00|  1|      3|         0|
+```
+
+### 14. Сделаем еще вставку, удалив заказ с номером 1
+
+```
 INSERT INTO learn_db.orders
 (order_id, status, amount, pcs, version, is_deleted)
 VALUES
 (1, 'created', 80, 1, 4, 1);
+```
 
+### 15. Получаем все строки из таблицы заказов и только актуальную строку
+
+```
+SELECT * FROM learn_db.orders o;
+```
+
+Результат
+```text
+order_id|status |amount|pcs|version|is_deleted|
+--------+-------+------+---+-------+----------+
+       1|created| 90.00|  1|      3|         0|
+       1|created| 80.00|  1|      4|         1|
+       1|created|100.00|  1|      1|         0|
+```
+
+```
+SELECT * FROM learn_db.orders o FINAL;
+```
+
+Результат
+```text
+order_id|status|amount|pcs|version|is_deleted|
+--------+------+------+---+-------+----------+
+```
+
+### 16. А если у нас асинхронная вставка и нам пришла еще одна строка
+
+```
 INSERT INTO learn_db.orders
 (order_id, status, amount, pcs, version, is_deleted)
 VALUES
 (1, 'created', 70, 1, 2, 0);
 ```
 
-### 12. Получаем все строки из таблицы заказов и только актуальную строку
+В этой вставке строка не помечена удаленной, но у нее более ранняя версия. 
 
-```sql
-SELECT * FROM orders o;
-SELECT * FROM orders o FINAL;
+### 17. Получаем все строки из таблицы заказов и только актуальную строку
+
+```
+SELECT * FROM learn_db.orders o;
 ```
 
-### 13. Проверим на сколько запрос замедляется при использовании FINAL. Создаем и наполняем таблицу с движком MergeTree
+Результат
+```text
+order_id|status |amount|pcs|version|is_deleted|
+--------+-------+------+---+-------+----------+
+       1|created|100.00|  1|      1|         0|
+       1|created| 90.00|  1|      3|         0|
+       1|created| 80.00|  1|      4|         1|
+       1|created| 70.00|  1|      2|         0|
+```
+
+```
+SELECT * FROM learn_db.orders o FINAL;
+```
+
+Результат
+```text
+order_id|status|amount|pcs|version|is_deleted|
+--------+------+------+---+-------+----------+
+```
+
+То есть если мы вставляем строчку с флагом is_deleted = 1, то ClickHouse ее оставит (если у нее максимальная версия). Для того, чтобы если позже придут другие строки с более ранними версиями по этому закажу чтобы СН не "оживил" этот заказ.
+
+### 18. Проверим на сколько запрос замедляется при использовании FINAL. Создаем и наполняем таблицу с движком MergeTree
 
 ```sql
 DROP TABLE learn_db.mart_student_lesson;
@@ -245,7 +399,7 @@ AS SELECT
 FROM numbers(10000000);
 ```
 
-### 14. Создаем и наполняем таблицу с движком ReplacingMergeTree
+### 19. Создаем и наполняем таблицу с движком ReplacingMergeTree
 
 ```sql
 DROP TABLE IF EXISTS learn_db.mart_student_lesson_replacing_merge_tree;
@@ -295,7 +449,24 @@ FROM
 	learn_db.mart_student_lesson;
 ```
 
-### 15. Считаем количество оценок в таблице с движком MergeTree
+### 20. Считаем количество оценок в таблице с движком MergeTree
+
+Для удобства замера времени выполнения запросов воспользуемся встроенным клиентом запросов. Перейдем в контейнер с БД на вкладку Exec и выполним команды
+
+```bash
+bash
+clickhouse-client
+```
+
+Увидим приветствие
+```text
+root@19294dc11be6:/# clickhouse-client
+ClickHouse client version 25.4.13.22 (official build).
+Connecting to localhost:9000 as user username.
+Connected to ClickHouse server version 25.4.13.
+```
+
+Далее вставим текст запроса и выполним его
 
 ```sql
 SELECT 
@@ -306,7 +477,49 @@ GROUP BY
 	mark;
 ```
 
-### 16. Считаем количество оценок в таблице с движком ReplacingMergeTree без применения FINAL
+Результат
+```text
+Query id: b21c19a9-1c9b-4c33-b0c8-f563f39ceedd
+
+   ┌─mark─┬─count()─┐
+1. │    2 │  484785 │
+2. │    3 │ 1300779 │
+3. │    4 │ 2013440 │
+4. │    5 │ 1198561 │
+5. │   -1 │ 5002435 │
+   └──────┴─────────┘
+
+5 rows in set. Elapsed: 0.032 sec. Processed 10.00 million rows, 10.00 MB (316.73 million rows/s., 316.73 MB/s.)
+Peak memory usage: 77.84 KiB.
+```
+
+### 21. Считаем количество оценок в таблице с движком ReplacingMergeTree без применения FINAL
+
+```sql
+SELECT 
+	mark, 
+	count(*) 
+FROM learn_db.mart_student_lesson_replacing_merge_tree
+GROUP BY
+	mark;
+```
+Результат
+```text
+Query id: f1c259ee-2546-4a4f-9e87-8e7363330b7c
+
+   ┌─mark─┬─count()─┐
+1. │    2 │  484590 │
+2. │    3 │ 1299434 │
+3. │    4 │ 2010357 │
+4. │    5 │ 1197455 │
+5. │   -1 │ 4983641 │
+   └──────┴─────────┘
+
+5 rows in set. Elapsed: 0.012 sec. Processed 9.98 million rows, 9.98 MB (811.60 million rows/s., 811.60 MB/s.)
+Peak memory usage: 254.91 KiB.
+```
+
+### 22. Считаем количество оценок в таблице с движком ReplacingMergeTree без применения FINAL
 
 ```sql
 SELECT 
@@ -317,20 +530,21 @@ GROUP BY
 	mark;
 ```
 
-Запрос выполнился за 0.032 сек.
+Результат:
+```text
+Query id: e36f25d8-9e29-44bd-b993-3c6765fc0cc8
 
-### 17. Считаем количество оценок в таблице с движком ReplacingMergeTree без применения FINAL
+   ┌─mark─┬─count()─┐
+1. │    2 │  484590 │
+2. │    3 │ 1299434 │
+3. │    4 │ 2010357 │
+4. │    5 │ 1197455 │
+5. │   -1 │ 4983641 │
+   └──────┴─────────┘
 
-```sql
-SELECT 
-	mark, 
-	count(*) 
-FROM learn_db.mart_student_lesson_replacing_merge_tree
-GROUP BY
-	mark;
+5 rows in set. Elapsed: 0.010 sec. Processed 9.98 million rows, 9.98 MB (956.91 million rows/s., 956.91 MB/s.)
+Peak memory usage: 79.21 KiB.
 ```
-
-Запрос выполнился за 0.015 сек.
 
 ### 18. Считаем количество оценок в таблице с движком ReplacingMergeTree c применением FINAL
 
@@ -343,4 +557,20 @@ GROUP BY
 	mark;
 ```
 
-Запрос выполнился за 0.232 сек. Замедление весьма существенное!
+Результат:
+```text
+Query id: ffed7eee-26fe-407b-9337-3d3fd2081d85
+
+   ┌─mark─┬─count()─┐
+1. │    2 │  484524 │
+2. │    3 │ 1298993 │
+3. │    4 │ 2009196 │
+4. │    5 │ 1197054 │
+5. │   -1 │ 4976417 │
+   └──────┴─────────┘
+
+5 rows in set. Elapsed: 0.201 sec. Processed 11.10 million rows, 144.27 MB (55.32 million rows/s., 719.14 MB/s.)
+Peak memory usage: 157.00 MiB.
+```
+
+Замедление весьма существенное!
