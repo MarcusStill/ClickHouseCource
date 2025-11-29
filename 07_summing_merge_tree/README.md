@@ -1,6 +1,7 @@
 # Применение движка SummingMergeTree
 
 ### 1. Удаляем и создаем таблицу orders
+
 ```sql
 DROP TABLE IF EXISTS orders;
 CREATE TABLE orders (
@@ -72,6 +73,7 @@ order_id|customer_id|sale_dt   |product_id|status   |amount|pcs|_part    |
 ```
        
 ### 4. Создаем таблицу с движком SummingMergeTree и ключом сортировки по дате, статусу и продукту
+
 ```sql
 DROP TABLE IF EXISTS orders_summ;
 CREATE TABLE orders_summ (
@@ -86,6 +88,7 @@ ORDER BY (sale_dt, status, product_id);
 ```
 
 ### 5. Вставляем в таблицу с агрегированными данными данные аналогичные, вставленным в таблицу с сырыми данным
+
 ```sql
 INSERT INTO learn_db.orders_summ
 (sale_dt, product_id, status, amount, pcs)
@@ -121,9 +124,11 @@ VALUES
 ```
 
 ### 6. Смотрим содержимое таблиц
+
 ```
 SELECT *, _part FROM orders;
 SELECT *, _part FROM orders_summ;
+
 ```
 Результат
 ```text 
@@ -137,6 +142,7 @@ sale_dt   |product_id|status   |amount|pcs|_part    |
 ```
 
 ### 7. Окончательный запрос получения сгруппированных, просуммированных данных
+
 ```
 SELECT 
 	sale_dt,
@@ -163,7 +169,8 @@ sale_dt   |product_id|status   |amount|pcs|
 2025-06-01|         1|canceled |110.00|  1|
 ```
 
-### 8. Пересоздаем таблицу с агрегированными данными с ключом сортировки по дате и продуту (без статуса)
+### 8. Пересоздаем таблицу с агрегированными данными с ключом сортировки по дате и продукту (без статуса)
+
 ```
 DROP TABLE IF EXISTS orders_summ;
 CREATE TABLE orders_summ (
@@ -178,6 +185,7 @@ ORDER BY (sale_dt, product_id);
 ```
 
 ### 9. Вставляем данные
+
 ```sql
 INSERT INTO learn_db.orders_summ
 (sale_dt, product_id, status, amount, pcs)
@@ -193,6 +201,7 @@ VALUES
 ```
 
 ### 10. Смотрим содержимое таблиц
+
 ```
 SELECT *, _part FROM orders_summ;
 ```
@@ -208,6 +217,7 @@ sale_dt   |product_id|status   |amount|pcs|_part    |
 ```
 
 ### 11. Делаем принудительное слияние частей и смотрим содержимое
+
 ```
 OPTIMIZE TABLE learn_db.orders_summ FINAL; 
 SELECT *, _part FROM orders_summ;
@@ -220,9 +230,11 @@ sale_dt   |product_id|status   |amount|pcs|_part    |
 2025-06-01|         1|successed|210.00|  2|all_1_2_2|
 2025-06-01|         2|successed|110.00|  4|all_1_2_2|
 ```
+
 Все товары по товарам товару объединились (несмотря на статус, он мог быть случайным).
 
 ### 12. Пересоздаем таблицу с агрегированными данными, указав суммирование только по полю amount
+
 ```
 DROP TABLE IF EXISTS orders_summ;
 CREATE TABLE orders_summ (
@@ -237,6 +249,7 @@ ORDER BY (sale_dt, status, product_id);
 ```
 
 ### 13. Вставляем данные
+
 ```
 INSERT INTO learn_db.orders_summ
 (sale_dt, product_id, status, amount, pcs)
@@ -251,6 +264,7 @@ VALUES
 ```
 
 ### 14. Делаем принудительное слияние частей и смотрим содержимое
+
 ```sql
 SELECT *, _part FROM orders_summ;
 OPTIMIZE TABLE learn_db.orders_summ FINAL; 
@@ -273,6 +287,7 @@ sale_dt   |product_id|status   |amount|pcs|_part    |
 В pcs случайное значение.
 
 ### 15. Пересоздаем таблицу с агрегированными данными (у поля pcs тип меняем на Int32)
+
 ```sql
 DROP TABLE IF EXISTS orders_summ;
 CREATE TABLE orders_summ (
@@ -287,6 +302,7 @@ ORDER BY (sale_dt, status, product_id);
 ```
 
 ### 16. Вставляем данные
+
 ```sql
 INSERT INTO learn_db.orders_summ
 (sale_dt, product_id, status, amount, pcs)
@@ -300,6 +316,7 @@ VALUES
 ```
 
 ### 17. Делаем принудительное слияние частей и смотрим содержимое
+
 ```sql
 SELECT *, _part FROM orders_summ;
 OPTIMIZE TABLE learn_db.orders_summ FINAL; 
@@ -312,8 +329,17 @@ sale_dt   |product_id|status   |amount |pcs|_part    |
 ----------+----------+---------+-------+---+---------+
 2025-06-01|         1|successed| 100.00|  1|all_1_1_1|
 2025-06-01|         1|successed|-100.00| -1|all_2_2_1|
+```
 
+```sql
+OPTIMIZE TABLE learn_db.orders_summ FINAL; 
+SELECT *, _part FROM orders_summ;
+```
+
+Результат
+```text 
 sale_dt|product_id|status|amount|pcs|_part|
 -------+----------+------+------+---+-----+
 ```
+
 Таблица пустая.  Если после группировке в парте по какой-то строке сумма по всем числовым полям получается 0, то эта строчка удаляется.
