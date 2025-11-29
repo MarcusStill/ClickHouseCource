@@ -2,7 +2,7 @@
 
 Добавьте minmax-индекс на поле lesson_date с granularity = 2. Проверьте, как изменится скорость выполнения запроса с фильтром по дате.
 
-#### Создаем таблицу mart_student_lesson
+#### 1. Создаем таблицу mart_student_lesson
 ```sql
 DROP TABLE IF EXISTS learn_db.mart_student_lesson;
 CREATE TABLE learn_db.mart_student_lesson
@@ -27,7 +27,7 @@ CREATE TABLE learn_db.mart_student_lesson
 ) ENGINE = MergeTree();
 ```
 
-#### Вставляем данные в таблицу
+#### 2. Вставляем данные в таблицу
 ```sql
 INSERT INTO mart_student_lesson
 (
@@ -86,7 +86,7 @@ SELECT
 FROM numbers(10000000);
 ```
 
-#### Выполним запрос без индекса
+#### 3. Выполним запрос без индекса
 
 ```sql
 SELECT 
@@ -139,7 +139,7 @@ Expression ((Project names + Projection))           |
         Granules: 1223/1223                         |
 ```
 
-#### Добавляем minmax-индекс на поле lesson_date
+#### 4. Добавляем minmax-индекс на поле lesson_date
 
 ```sql
 ALTER TABLE learn_db.mart_student_lesson ADD INDEX idx_lesson_date lesson_date TYPE minmax GRANULARITY 2;
@@ -211,7 +211,7 @@ Expression ((Project names + Projection))           |
 Задание: Добавьте set-индекс на поле subject_id с размером множества 100. 
 Выполните запрос с фильтром по редкому значению subject_id и сравните план выполнения.
 
-###  Проверяем выполнение запроса до добавления индекса
+###  5. Проверяем выполнение запроса до добавления индекса
 
 ```sql
 SELECT 
@@ -266,7 +266,7 @@ Expression ((Project names + Projection))           |
         Granules: 2446/2446                         |
 ```
 
-###  Добавим индекс
+###  6. Добавим индекс
 
 ```sql
 ALTER TABLE learn_db.mart_student_lesson
@@ -277,7 +277,7 @@ ALTER TABLE learn_db.mart_student_lesson
 MATERIALIZE INDEX subject_id_set_index;
 ```
 
-###  Проверим скорость выполнения запроса
+###  7. Проверим скорость выполнения запроса
 
 ```sql
 SELECT 
@@ -341,7 +341,7 @@ Expression ((Project names + Projection))           |
 Выполните поиск по конкретному person_id и оцените, сколько блоков было пропущено.
 
 
-###  Проверяем выполнение запроса до добавления индекса
+###  8. Проверяем выполнение запроса до добавления индекса
 
 ```sql
 SELECT 
@@ -391,7 +391,7 @@ Expression ((Project names + Projection))           |
         Granules: 2446/2446                         |
 ```
 
-###  Добавим индекс
+###  9. Добавим индекс
 
 ```sql
 ALTER TABLE learn_db.mart_student_lesson
@@ -401,7 +401,7 @@ ALTER TABLE learn_db.mart_student_lesson
 MATERIALIZE INDEX person_id_bloom_filter_idx;
 ```
 
-###  Проверим скорость выполнения запроса
+###  10. Проверим скорость выполнения запроса
 
 ```sql
 SELECT 
@@ -464,7 +464,7 @@ Expression ((Project names + Projection))           |
 Оцените, насколько индекс помогает (или нет).
 
 
-###  Проверяем выполнение запроса до добавления индекса
+###  11. Проверяем выполнение запроса до добавления индекса
 
 ```sql
 SELECT 
@@ -519,7 +519,7 @@ Expression ((Project names + Projection))           |
         Granules: 5/2446                            |
 ```
 
-###  Добавим индекс
+###  12. Добавим индекс
 
 ```sql
 ALTER TABLE learn_db.mart_student_lesson
@@ -530,7 +530,7 @@ ALTER TABLE learn_db.mart_student_lesson
 MATERIALIZE INDEX student_profile_id_set_index;
 ```
 
-###  Проверим скорость выполнения запроса
+###  13. Проверим скорость выполнения запроса
 
 ```sql
 SELECT 
@@ -542,7 +542,6 @@ WHERE
 ```
 
 Результат
-
 ```text
 Query id: 5b7f8dfd-182f-46c6-a4f7-20073b7928c9
 
@@ -566,7 +565,6 @@ WHERE
 ```
 
 Результат
-
 ```text
 explain                                             |
 ----------------------------------------------------+
@@ -591,7 +589,7 @@ Expression ((Project names + Projection))           |
 Задание: Добавьте minmax-индексы на оба поля и выполните запросы с фильтрацией по году и по дате. Сравните, какой индекс эффективнее.
 
 
-###  Проверяем выполнение запроса до добавления индексов
+###  14. Проверяем выполнение запроса до добавления индексов
 
 ```sql
 SELECT 
@@ -605,7 +603,6 @@ WHERE
 ```
 
 Результат
-
 ```text
 Query id: c8b1167b-3ea4-4ee6-9f81-1f9a6b9d2dcc
 
@@ -636,7 +633,6 @@ WHERE
 ```
 
 Результат
-
 ```text
 explain                                             |
 ----------------------------------------------------+
@@ -655,7 +651,7 @@ Expression ((Project names + Projection))           |
         Granules: 2446/2446                         |
 ```
 
-###  Добавим индексы
+###  15. Добавим индексы
 
 ```sql
 ALTER TABLE learn_db.mart_student_lesson ADD INDEX idx_lesson_year lesson_year TYPE minmax GRANULARITY 2;
@@ -665,7 +661,7 @@ ALTER TABLE learn_db.mart_student_lesson ADD INDEX idx_lesson_date lesson_date T
 ALTER TABLE learn_db.mart_student_lesson MATERIALIZE INDEX idx_lesson_date;
 ```
 
-###  Проверим скорость выполнения запроса
+###  16. Проверим скорость выполнения запроса
 
 ```sql
 SELECT 
@@ -679,7 +675,6 @@ WHERE
 ```
 
 Результат
-
 ```text
 Query id: 032da213-65b3-46ec-b17d-e0ae0fccad90
 
@@ -710,7 +705,6 @@ WHERE
 ```
 
 Результат
-
 ```text
   explain                                             |
 ----------------------------------------------------+
@@ -740,14 +734,14 @@ Expression ((Project names + Projection))           |
 
 Задание: Создайте два minmax-индекса на lesson_date с granularity 1 и 10. Сравните размер индекса и количество пропущенных блоков при одинаковом запросе.
 
-Удалим индекс
+### 17. Удалим индекс
 
 ```sql
 ALTER TABLE learn_db.mart_student_lesson DROP INDEX idx_lesson_date;
 ```
 
 
-###  Проверяем выполнение запроса до добавления индекса
+###  18. Проверяем выполнение запроса до добавления индекса
 
 
 ```sql
@@ -759,7 +753,6 @@ WHERE
 ```
 
 Результат
-
 ```text
 Query id: 160f46b1-3d07-4d0c-9f43-cb6ee4b26112
 
@@ -777,7 +770,7 @@ Showed 1000 out of 54953 rows.
 Peak memory usage: 48.21 MiB.
 ```
 
-```
+```sql
 explain indexes = 1
 SELECT 	*
 FROM
@@ -787,7 +780,6 @@ WHERE
 ```
 
 Результат
-
 ```text
 explain                                             |
 ----------------------------------------------------+
@@ -801,14 +793,14 @@ Expression ((Project names + Projection))           |
         Granules: 2446/2446                         |
 ```
 
-###  Добавим индекс с гранулярностью 1
+###  19. Добавим индекс с гранулярностью 1
 
 ```sql
 ALTER TABLE learn_db.mart_student_lesson ADD INDEX idx_lesson_date lesson_date TYPE minmax GRANULARITY 1;
 ALTER TABLE learn_db.mart_student_lesson MATERIALIZE INDEX idx_lesson_date;
 ```
 
-###  Проверим скорость выполнения запроса
+###  20. Проверим скорость выполнения запроса
 
 ```sql
 SELECT 	*
@@ -819,7 +811,6 @@ WHERE
 ```
 
 Результат
-
 ```text
 Query id: e94a1bfa-36ac-42b0-afbe-f65611f900b8
 
@@ -837,7 +828,7 @@ Showed 1000 out of 54953 rows.
 Peak memory usage: 50.85 MiB.
 ```
 
-```
+```sql
 explain indexes = 1
 SELECT 	*
 FROM
@@ -847,7 +838,6 @@ WHERE
 ```
 
 Результат
-
 ```text
 explain                                             |
 ----------------------------------------------------+
@@ -866,20 +856,20 @@ Expression ((Project names + Projection))           |
         Granules: 2446/2446                         |
 ```
 
-Удалим индекс
+### 21. Удалим индекс
 
 ```sql
 ALTER TABLE learn_db.mart_student_lesson DROP INDEX idx_lesson_date;
 ```
 
-###  Добавим индекс с гранулярностью 10
+###  22. Добавим индекс с гранулярностью 10
 
 ```sql
 ALTER TABLE learn_db.mart_student_lesson ADD INDEX idx_lesson_date lesson_date TYPE minmax GRANULARITY 10;
 ALTER TABLE learn_db.mart_student_lesson MATERIALIZE INDEX idx_lesson_date;
 ```
 
-###  Проверим скорость выполнения запроса
+###  23. Проверим скорость выполнения запроса
 
 ```sql
 SELECT 	*
@@ -890,7 +880,6 @@ WHERE
 ```
 
 Результат
-
 ```text
 Query id: 35bdb66b-1d86-43b4-ada3-8983814e43ae
 
@@ -908,7 +897,7 @@ Showed 1000 out of 54953 rows.
 Peak memory usage: 48.96 MiB.
 ```
 
-```
+```sql
 explain indexes = 1
 SELECT 	*
 FROM
@@ -918,7 +907,6 @@ WHERE
 ```
 
 Результат
-
 ```text
 explain                                             |
 ----------------------------------------------------+

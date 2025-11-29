@@ -1,5 +1,18 @@
 ## Задание 1.
 
+Имеется таблица заказов:
+```sql
+DROP TABLE IF EXISTS learn_db.orders;
+CREATE TABLE learn_db.orders (
+    order_id UInt32,
+    user_id UInt32,
+    product_id UInt32,
+    amount Decimal(18, 2),
+    order_date Date
+) ENGINE = MergeTree()
+ORDER BY (product_id, order_date);
+```
+
 Создайте таблицу orders_stat_agg с движком AggregatingMergeTree, которая будет хранить предварительно агрегированные данные по дням (order_date) и товарам (product_id).
 Таблица должна содержать следующие агрегаты:
  * Количество уникальных заказов (uniq(order_id))
@@ -9,6 +22,7 @@
  * Перцентиль суммы заказа (quantile(amount))
 
 ### 1. Создаем таблицу orders с основными данными заказов
+
 ```sql
 DROP TABLE IF EXISTS learn_db.orders;
 CREATE TABLE learn_db.orders (
@@ -38,7 +52,32 @@ ENGINE = AggregatingMergeTree()
 ORDER BY (product_id, order_date);
 ```
 
+## Задание 2.
+
+Цель: сгенерировать 10 000 000 тестовых записей в таблице orders для последующего анализа.
+
+Напишите запрос INSERT, который заполнит таблицу orders случайными данными со следующими характеристиками:
+- order_id — уникальный номер заказа (начиная с 10)
+- user_id — случайный ID пользователя (от 1 до 1000)
+- product_id — случайный ID товара (от 1 до 1000)
+- amount — случайная сумма заказа (от 1 до 5000)
+- order_date — случайная дата за последний год.
+
+Шаблон запроса:
+```sql
+INSERT INTO learn_db.orders
+SELECT
+    number + 10 AS order_id,
+    round(randUniform(1, 1000)) AS user_id,
+    round(randUniform(1, 1000)) AS product_id,
+    randUniform(1, 5000) AS amount,
+    date_add(DAY, rand() % 366, today() - INTERVAL 1 YEAR) AS order_date
+FROM 
+    numbers(10000000);
+```
+
 ### 3. Наполнение таблицы тестовыми данными
+
 ```sql
 INSERT INTO learn_db.orders
 SELECT
@@ -63,7 +102,23 @@ count() |
 10000000|
 ```
 
+## Задание 3.
+
+Цель: Научиться загружать предварительно агрегированные данные в таблицу с движком AggregatingMergeTree.
+
+Напишите запрос INSERT, который:
+- группирует данные из orders по order_date и product_id
+- вычисляет требуемые агрегаты:
+  - количество уникальных заказов (uniq(order_id)), 
+  - минимальная, максимальная, медианная и 90-й перцентиль суммы (min(amount), max(amount), median(amount), quantile(amount))
+- вставляет результат в таблицу orders_stat_agg
+
+Примечание: для AggregatingMergeTree используются -State-функции при вставке и -Merge-функции при выборке.
+
+Убедитесь, что структура orders_stat_agg соответствует агрегируемым полям.
+
 ### 4. Вставка агрегированных данных в таблицу orders_stat_agg
+
 ```sql
 INSERT INTO learn_db.orders_stat_agg
 SELECT
@@ -82,6 +137,7 @@ GROUP BY
 ```
 
 ### 5. Анализ агрегированных данных
+
 ```sql
 SELECT
     order_date,
@@ -146,6 +202,28 @@ Expression ((Project names + Projection))           |
 ```
 
 ## Задание 2: Оптимизация и анализ производительности
+Цель: сгенерировать 10 000 000 тестовых записей в таблице orders для последующего анализа.
+
+Напишите запрос INSERT, который заполнит таблицу orders случайными данными со следующими характеристиками:
+- order_id — уникальный номер заказа (начиная с 10)
+- user_id — случайный ID пользователя (от 1 до 1000)
+- product_id — случайный ID товара (от 1 до 1000)
+- amount — случайная сумма заказа (от 1 до 5000)
+- order_date — случайная дата за последний год
+
+Шаблон запроса:
+```sql
+INSERT INTO learn_db.orders
+SELECT
+    number + 10 AS order_id,
+    round(randUniform(1, 1000)) AS user_id,
+    round(randUniform(1, 1000)) AS product_id,
+    randUniform(1, 5000) AS amount,
+    date_add(DAY, rand() % 366, today() - INTERVAL 1 YEAR) AS order_date
+FROM 
+    numbers(10000000);
+```
+Проверка: убедитесь, что таблица содержит 10 млн строк.
 
 ### 6. Первый запрос – вычисление агрегатов напрямую из orders.
 
@@ -178,6 +256,7 @@ Peak memory usage: 693.58 MiB.
 ```
 
 ### 7. Второй запрос – получение данных из orders_stat_agg.
+
 ```sql
 SELECT
     medianMerge(median_amount) as median_amount,

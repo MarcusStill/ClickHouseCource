@@ -29,7 +29,7 @@ ENGINE = SummingMergeTree()
 ORDER BY (product_id, order_date);
 ```
 
-### 1.3. Создаем материализованное представление, отслеживащее новые строки в orders и добавляющее строки в orders_sum_mv
+### 1.3. Создаем материализованное представление, отслеживающее новые строки в orders и добавляющее строки в orders_sum_mv
 
 ```sql
 DROP TABLE IF EXISTS learn_db.orders_sum_mv;
@@ -134,6 +134,7 @@ product_id|order_date|amount|
 ```
 
 ### 1.8. Вставляем в orders 100 000 000 строк
+
 ```sql
 INSERT INTO learn_db.orders
 SELECT
@@ -182,6 +183,7 @@ COUNT()  |
 ```
 
 ### 1.10. Получаем последние запросы из Datalens
+
 ```sql
 SELECT * FROM system.query_log WHERE type = 2 and `http_user_agent` = 'DataLens' ORDER BY `event_time` DESC;
 ```
@@ -234,6 +236,7 @@ COUNT()|
 ```
 
 ### 2.4. Вставляем 4 строки в orders и смотрим содержимое orders_user_order
+
 ```sql
 INSERT INTO learn_db.orders
 (order_id, user_id, product_id, amount, order_date)
@@ -262,6 +265,7 @@ COUNT()|
 ```
 
 ### 2.5. Вставляем в orders_user_order все строки из orders, за исключением последних 4
+
 ```
 INSERT INTO `orders_user_order`
 (
@@ -390,6 +394,7 @@ Peak memory usage: 1.69 MiB.
 ```
 
 ### 2.8. Создаем материализованное представление, сохраняющее данные в себе
+
 ```
 DROP TABLE IF EXISTS learn_db.orders_user_order_mv_v2;
 CREATE MATERIALIZED VIEW learn_db.orders_user_order_mv_v2 
@@ -443,6 +448,7 @@ order_id |user_id|
 ---------+-------+
 100000015|      1|
 ```
+
 ```sql
 SELECT COUNT(*) FROM learn_db.orders_user_order_mv_v2;
 ```
@@ -489,7 +495,7 @@ COUNT()  |
 100000010|
 ```
 
-Удаляем запись.
+### 2.13. Удаляем запись.
 
 ```sql
 ALTER TABLE learn_db.orders DELETE WHERE order_id = 1000;

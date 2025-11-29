@@ -41,6 +41,7 @@ uniq(user_id)|
 ```
 
 ### 4. Пересоздаем таблицу orders_agg
+
 ```
 DROP TABLE IF EXISTS learn_db.orders_agg;
 CREATE TABLE learn_db.orders_agg (
@@ -200,7 +201,7 @@ sumMerge(amount)|uniqMerge(users)|
            30.00|               2|
 ```
 
-```
+```sql
 SELECT 
 	product_id,
 	sumMerge(amount),

@@ -1,6 +1,7 @@
 # Партиционирование таблиц
 
 ### 1. Создаем не партиционированную таблицу с заказами orders
+
 ```sql
 DROP TABLE IF EXISTS learn_db.orders;
 CREATE TABLE learn_db.orders (
@@ -14,7 +15,7 @@ ENGINE = MergeTree()
 ORDER BY (product_id);
 ```
 
-### 2. Вставляем в таблицу с заказам 10 000 000 строк
+### 2. Вставляем в таблицу с заказами 10 000 000 строк
 
 ```sql
 INSERT INTO learn_db.orders
@@ -28,7 +29,7 @@ FROM
 	numbers(10000000);
 ```
 
-### 3. Создаем таблицу с заказам партционированную по годам
+### 3. Создаем таблицу с заказами, партиционированную по годам
 
 ```sql
 DROP TABLE IF EXISTS learn_db.orders_partition_by_year;
@@ -67,7 +68,7 @@ all          |all_8_8_0|
 all          |all_9_9_0|
 ```
 
-```
+```sql
 SELECT DISTINCT _partition_id, _part FROM learn_db.orders_partition_by_year ORDER BY _partition_id, _part;
 ```
 
@@ -380,6 +381,7 @@ TTL order_date + INTERVAL 12 MONTH TO VOLUME 'slow_but_cheap';
 ```
 
 ### 11. Реализовано автоматическое удаление данных: записи заказов старше 12 месяцев удаляются
+
 ```sql
 DROP TABLE IF EXISTS learn_db.orders_partition_by_year;
 CREATE TABLE learn_db.orders_partition_by_year (

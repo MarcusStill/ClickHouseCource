@@ -10,6 +10,7 @@
 Движок таблицы: MergeTree. Первичный ключ по полю date.
 
 #### Создаем таблицу sales
+
 ```sql
 DROP TABLE IF EXISTS learn_db.sales;
 CREATE TABLE learn_db.sales (
@@ -82,6 +83,7 @@ VALUES
 ```
 
 #### Делаем проверку в таблице sales:
+
 ```sql
 select * from learn_db.sales;
 ```
@@ -96,6 +98,7 @@ product_id|quantity|price|sales_date|total_amount|
 ```
 
 #### Делаем проверку в таблице sales_daily_stats:
+
 ```sql
 SELECT
     sales_date,

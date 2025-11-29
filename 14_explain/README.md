@@ -759,6 +759,7 @@ Positions: 2 0                                                                  
                        FUNCTION greaterOrEquals(lesson_date : 0, _CAST(20364_Date, 'Date'_String) :: 1) -> greaterOrEquals(__table1.lesson_date, _CAST(20364_Date, 'Date'_String)) UInt8 : 2|
               Positions: 0 2                                                                                                                                                                |
 ```
+
 ### 14. Получение плана выполнения запроса с информацией о результатах применения индексов
 
 ```sql
@@ -1222,6 +1223,7 @@ Query id: dabed898-4e56-4159-82a3-8f80d4a34b81
 ```
 
 ### 22. Подставляем query_id в запрос и получаем время выполнения и другую информацию по каждому этапу запроса
+
 ```sql
 SELECT * FROM system.processors_profile_log WHERE query_id = 'dabed898-4e56-4159-82a3-8f80d4a34b81';
 ```
@@ -1818,7 +1820,6 @@ ORDER BY
 ```
 
 Результат
-
 ```text
 Query id: 0f5388a4-da94-46d5-8685-588f70119099
 

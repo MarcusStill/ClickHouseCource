@@ -3,6 +3,7 @@
 ## Индекс пропуска данных типа minmax
 
 ### 1. Создаем таблицы с уроками и оценками учеников
+
 ```sql
 DROP TABLE IF EXISTS learn_db.mart_student_lesson;
 CREATE TABLE learn_db.mart_student_lesson
@@ -133,6 +134,7 @@ FROM
 WHERE 
 	class_id = 200;
 ```
+
 Результат
 ```text
 explain                                             |
@@ -148,6 +150,7 @@ Expression ((Project names + Projection))           |
         Parts: 3/3                                  |
         Granules: 3/2446                            |
 ```
+
 ### 4. Получаем данные по столбцу student_profile_id без применения индекса
 
 ```sql
@@ -245,7 +248,6 @@ FROM
 WHERE 
 	student_profile_id = 8;
 ```
-
 
 Результат
 ```text
@@ -511,7 +513,6 @@ CREATE TABLE git.file_changes
 
 INSERT INTO git.file_changes SELECT *
 FROM s3('https://datasets-documentation.s3.amazonaws.com/github/commits/clickhouse/file_changes.tsv.xz', 'TSV', 'change_type Enum(\'Add\' = 1, \'Delete\' = 2, \'Modify\' = 3, \'Rename\' = 4, \'Copy\' = 5, \'Type\' = 6), path LowCardinality(String), old_path LowCardinality(String), file_extension LowCardinality(String), lines_added UInt32, lines_deleted UInt32, hunks_added UInt32, hunks_removed UInt32, hunks_changed UInt32, commit_hash String, author LowCardinality(String), time DateTime, commit_message String, commit_files_added UInt32, commit_files_deleted UInt32, commit_files_renamed UInt32, commit_files_modified UInt32, commit_lines_added UInt32, commit_lines_deleted UInt32, commit_hunks_added UInt32, commit_hunks_removed UInt32, commit_hunks_changed UInt32')
-
 ```
 
 ### 14. Замеряем время выполнения и смотрим план выполнения запроса поиск по подстроке
@@ -807,6 +808,7 @@ MATERIALIZE INDEX commit_message_tokenbf_v1_index;
 ```
 
 ### 16. Проверяем поменялось ли время выполнения запроса и план выполнения запроса
+
 ```
 SELECT * FROM git.file_changes WHERE commit_message LIKE '%MYSQL%';
 ```
