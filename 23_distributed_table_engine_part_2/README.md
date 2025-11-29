@@ -7,7 +7,7 @@ fs/volumes/clickhouse-01/etc/clickhouse-server/config.d/config.xml fs/volumes/cl
 fs/volumes/clickhouse-03/etc/clickhouse-server/config.d/config.xml fs/volumes/clickhouse-04/etc/clickhouse-server/config.d/config.xml
 ```
 
-Вносим правки
+Вносим правки, добавляя тег internal_replication
 ```xml
 <clickhouse replace="true">
 ...
@@ -224,7 +224,7 @@ clickhouse-01|ExceptionBeforeStart    |2025-11-25|2025-11-25 16:41:20|2025-11-25
 
 Видим что запрос обработал 10 млн строк. Хотя это суммарное количество строк на всем шарде. Но он сначала сделал на реплике 1 и получил предагрегированный результат со второй реплики.
 
-Запомним показатели:
+Показатели показатели:
 read_rows = 10000000
 query_id = 92ca4662-47ef-4cda-9b92-7c61b675fc33
 event_time = 2025-11-25 16:41:27

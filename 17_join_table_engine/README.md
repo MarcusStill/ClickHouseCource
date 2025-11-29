@@ -490,6 +490,7 @@ query_id = b96520e1-07b0-4b35-bbd4-f9c234893576
 ```sql
 SELECT sum(elapsed_us) FROM system.processors_profile_log WHERE query_id = 'b96520e1-07b0-4b35-bbd4-f9c234893576' AND processor_uniq_id LIKE 'JoiningTransform_%';
 ```
+
 Результат
 ```text
 Name           |Value  |
@@ -617,7 +618,7 @@ Query id: 9187b1b1-6a62-4ba9-96c1-19b69592b458
 Peak memory usage: 149.38 MiB.
 ```
 
-### 13. Получаем конвеер графа выполнения запроса с соединением с таблицой с движком MergeTree
+### 13. Получаем конвеер графа выполнения запроса с соединением с таблицей с движком MergeTree
 
 ```sql
 EXPLAIN pipeline graph = 1, compact = 0
@@ -878,7 +879,7 @@ digraph
 }
 ```
 
-Видим, что шаг ReadPoolInOrder был выделен отдельно. для него была сделана предобработка (ExpressionTransform_25, FillingRightJoinSide_26, Resize_27) и потом шаг Resize_27 присоединяется к шагам JoiningTransform_*.
+Видим, что шаг ReadPoolInOrder был выделен отдельно. Для него была сделана предобработка (ExpressionTransform_25, FillingRightJoinSide_26, Resize_27) и потом шаг Resize_27 присоединяется к шагам JoiningTransform_*.
 
 ### 14. Получаем информацию о времени выполнения шагов запроса с соединением таблиц
 

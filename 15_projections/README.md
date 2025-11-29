@@ -1,6 +1,7 @@
 # Проекции
 
 ### 1. Пересоздаем таблицу и наполняем ее данными
+
 ```sql
 DROP TABLE IF EXISTS learn_db.mart_student_lesson; 
 CREATE TABLE learn_db.mart_student_lesson
@@ -62,13 +63,17 @@ AS SELECT
 FROM numbers(10000000);
 ```
 
-### 2. Находим первый запрос, который приходит из DataLens
+### 2. Выполним первый запрос
 
 ```sql
-SELECT * FROM system.query_log WHERE http_user_agent = 'DataLens' ORDER BY event_time DESC;
+SELECT t1.subject_name AS res_0, avg(t1.mark) AS res_1
+FROM learn_db.mart_student_lesson AS t1
+WHERE t1.lesson_date BETWEEN toDate32('2025-10-09') AND toDate32('2025-10-15')
+GROUP BY res_0
+LIMIT 1000001
 ```
 
-### 3. Исследуем эффективность выполнения первого запроса
+### 3. Исследуем эффективность его выполнения
 
 ```sql
 EXPLAIN indexes = 1
@@ -98,7 +103,7 @@ Expression ((Project names + Projection))                                       
               Granules: 26/1223                                                             |
 ```
 
-### 4. Исследуем эффективность выполнения второго запроса
+### 4. Исследуем эффективность выполнения второго запроса, в который была добавлена фильтрация по полю educational_organization_id
 
 ```sql
 EXPLAIN indexes = 1
@@ -221,6 +226,7 @@ Expression ((Project names + Projection))                                       
               Parts: 4/4                                                                                                                         |
               Granules: 829/1223                                                                                                                 |
 ```
+
 Индекс сработал, но эффективность фильтрации низкая. 
 
 ### 7. Смотрим, сколько времени выполняются шаги запроса
@@ -327,6 +333,7 @@ SUM(elapsed_us)|
 ```
 
 ### 8. Добавляем и материализуем проекцию с другим первичным индексом
+
 ```sql
 ALTER TABLE learn_db.mart_student_lesson
 ADD PROJECTION educational_organization_id_pk_projection
@@ -484,7 +491,7 @@ educational_organization_id.cmrk2               lesson_year.cmrk2          paral
 educational_organization_id_pk_projection.proj  load_date.bin              person_id.bin         subject_id.cmrk2
 ```
 
-Видим что есть дополнительный каталог educational_organization_id_pk_projection.proj
+Видим наличие дополнительного каталога educational_organization_id_pk_projection.proj
 
 ```bash
 cd educational_organization_id_pk_projection.proj

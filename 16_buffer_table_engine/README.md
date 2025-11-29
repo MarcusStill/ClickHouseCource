@@ -74,7 +74,7 @@ SELECT
     END AS mark
 FROM numbers(10);
 ```
-### 4. Проверяем содержимое основной таблицы и буфферной
+### 4. Проверяем содержимое основной таблицы и буферной
 
 ```sql
 SELECT COUNT(*) FROM learn_db.mart_student_lesson_buffer;
@@ -187,7 +187,7 @@ FROM numbers(1000)
 " --iterations=1000 
 ```
 
-### 7. Проверяем содержимое основной таблицы и буфферной
+### 7. Проверяем содержимое основной таблицы и буферной
 
 ```sql
 SELECT COUNT(*) FROM learn_db.mart_student_lesson_buffer;

@@ -98,7 +98,7 @@ FROM numbers(10000000);
 
 ###  2.1 Сделаем замеры производительности исходной таблицы
 
-### 11. Смотрим на размер столбцов
+### 2.2. Смотрим на размер столбцов
 
 ```sql
 SELECT
@@ -137,7 +137,7 @@ lesson_year                |87.37 KiB      |19.07 MiB        |223.55|     89467|
 ```
 
 
-### 12. Смотрим общий размер таблицы
+### 2.3. Смотрим общий размер таблицы
 
 ```sql
 SELECT
@@ -158,7 +158,7 @@ compressed_size|uncompressed_size|ratio|compressed|uncompressed|
 323.28 MiB     |855.51 MiB       | 2.65| 338988624|   897066304|
 ```
 
-### 13. Выполняем диагностический запрос
+### 2.4. Выполняем диагностический запрос
 
 ```sql
 SELECT
@@ -231,7 +231,7 @@ Peak memory usage: 36.39 MiB.
 
 ## Оптимизация 
 
-### 14. Проверим максимальные и минимальные значения в столбцах
+### 2.5. Проверим максимальные и минимальные значения в столбцах
 
 ```sql
 SELECT 
@@ -320,7 +320,7 @@ subject_id                 |0        |15       |
 mark                       |2        |5        |
 ```
 
-### 15. Пересоздадим таблицу, изменив типы данных
+### 2.6. Пересоздадим таблицу, изменив типы данных
 
 ```sql
 DROP TABLE IF EXISTS learn_db.mart_student_lesson_optimized_1;
@@ -364,7 +364,7 @@ FROM
 	learn_db.mart_student_lesson;
 ```
 
-### 16. Проверим размер столбцов в новой таблице mart_student_lesson_optimized_1
+### 2.7. Проверим размер столбцов в новой таблице mart_student_lesson_optimized_1
 
 ```sql
 SELECT
@@ -402,7 +402,7 @@ lesson_month_text          |54.03 KiB      |9.56 MiB         |181.27|     55322|
 lesson_month_digits        |53.80 KiB      |9.56 MiB         |182.01|     55096|    10028053|
 ```
 
-### 17. Получим общий размер таблицы mart_student_lesson_optimized_1
+### 2.8. Получим общий размер таблицы mart_student_lesson_optimized_1
 
 ```sql
 SELECT
@@ -422,7 +422,7 @@ compressed_size|uncompressed_size|ratio|compressed|uncompressed|
 255.17 MiB     |332.78 MiB       |  1.3| 267563368|   348946609|
 ```
 
-### 17. Выполним диагностический запрос к таблице mart_student_lesson_optimized_1
+### 2.9. Выполним диагностический запрос к таблице mart_student_lesson_optimized_1
 
 ```sql
 SELECT
@@ -493,7 +493,7 @@ Query id: 697346d8-456b-4cd9-9b1a-c97d0f739e29
 Peak memory usage: 13.39 MiB.
 ```
 
-### 18. Пересоздадим таблицу, добавив сжатие
+### 2.10. Пересоздадим таблицу, добавив сжатие
 
 ```sql
 DROP TABLE IF EXISTS learn_db.mart_student_lesson_optimized_2;
@@ -535,7 +535,7 @@ FROM
 	learn_db.mart_student_lesson;
 ```
 
-### 19. Проверим размер столбцов в новой таблице mart_student_lesson_optimized_2
+### 2.11. Проверим размер столбцов в новой таблице mart_student_lesson_optimized_2
 
 ```sql
 SELECT
@@ -573,7 +573,7 @@ lesson_month_text          |54.11 KiB      |9.56 MiB         |180.99|     55407|
 lesson_month_digits        |53.89 KiB      |9.56 MiB         |181.71|     55187|    10028045|
 ```
 
-### 20. Получим общий размер таблицы mart_student_lesson_optimized_2
+### 2.12. Получим общий размер таблицы mart_student_lesson_optimized_2
 
 ```sql
 SELECT
@@ -593,7 +593,7 @@ compressed_size|uncompressed_size|ratio|compressed|uncompressed|
 225.81 MiB     |332.78 MiB       | 1.47| 236775896|   348946586|
 ```
 
-### 21. Выполним диагностический запрос к таблице mart_student_lesson_optimized_2
+### 2.13. Выполним диагностический запрос к таблице mart_student_lesson_optimized_2
 
 ```sql
 SELECT
@@ -666,7 +666,7 @@ Peak memory usage: 11.60 MiB.
 
 ## Сравнительный анализ результатов 
 
-### 22. Эффективность сжатия данных
+### 2.14. Эффективность сжатия данных
 
 Результат
 ```text
@@ -676,7 +676,7 @@ Peak memory usage: 11.60 MiB.
 Оптимизация 2	225.81 MiB	    332.78 MiB	        1.47x
 ```
 
-### 23. Анализ по столбцам
+### 2.15. Анализ по столбцам
 
 Результат
 ```text
@@ -690,7 +690,7 @@ educational_organization_id	14.06 MiB   →   9.56 MiB        →   6.60 MiB
 
 ```
 
-### 24. Производительность запросов
+### 2.16. Производительность запросов
 
 Результат
 ```text

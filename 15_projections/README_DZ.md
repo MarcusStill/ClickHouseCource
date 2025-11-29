@@ -17,6 +17,7 @@
    ```
 
 ### 1. Пересоздаем таблицу и наполняем ее данными
+
 ```sql
 DROP TABLE IF EXISTS learn_db.mart_student_lesson; 
 CREATE TABLE learn_db.mart_student_lesson
@@ -98,7 +99,6 @@ Query id: c946e8e7-c5e3-4309-aac5-cec3bf9bf1a1
 1 row in set. Elapsed: 0.133 sec. Processed 10.00 million rows, 356.68 MB (75.06 million rows/s., 2.68 GB/s.)
 Peak memory usage: 3.15 MiB.
 ```
-
 
 ```sql
 EXPLAIN indexes = 1
